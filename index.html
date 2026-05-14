@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCX Client Prototype</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="workspace" aria-label="MCX Client web prototype">
+      <section class="context-panel" aria-labelledby="prototype-title">
+        <div class="brand-row">
+          <span class="brand-mark" aria-hidden="true">MC</span>
+          <div>
+            <h1 id="prototype-title">MCX Field Client</h1>
+            <p>Compose 기반 Android 단말 앱을 가정한 웹 프로토타입</p>
+          </div>
+        </div>
+
+        <div class="ops-strip" aria-label="운영 상태 요약">
+          <div>
+            <strong>Network</strong>
+            <span>PS-LTE / LTE-R</span>
+          </div>
+          <div>
+            <strong>Mode</strong>
+            <span id="modeText">Normal</span>
+          </div>
+          <div>
+            <strong>Latency</strong>
+            <span id="latencyText">42 ms</span>
+          </div>
+        </div>
+
+        <div class="brief-grid">
+          <article>
+            <h2>벤치마크 방향</h2>
+            <p>
+              공개 마켓 앱보다 고객사 전용 배포 가능성이 높아, MCPTT/MCX 현장 단말의
+              공통 패턴인 PTT, Talk Group, 긴급 호출, 위치 공유, 메시지, 접근성 흐름을
+              중심으로 구성했습니다.
+            </p>
+          </article>
+          <article>
+            <h2>핵심 사용자</h2>
+            <p>
+              철도 승무원, 관제 연계 인력, 재난 안전 현장요원, 군/공공 안전망 사용자를
+              상정했습니다. 빠른 조작과 상태 인지가 우선입니다.
+            </p>
+          </article>
+        </div>
+
+        <div class="console-panel" aria-label="관제 콘솔 미리보기">
+          <div class="console-title">
+            <span>Talk Group Monitor</span>
+            <button type="button" id="simulateIncident">상황 발생</button>
+          </div>
+          <div class="channel-list" id="channelList"></div>
+        </div>
+      </section>
+
+      <section class="phone-stage" aria-label="Android 앱 화면">
+        <div class="phone-shell">
+          <header class="phone-status" aria-label="단말 상태">
+            <span id="clock">10:24</span>
+            <span>MCX R15</span>
+            <span id="signalText">LTE-R 92%</span>
+          </header>
+
+          <section class="app-screen" aria-live="polite">
+            <div class="top-bar">
+              <div>
+                <p class="eyebrow">Active Talk Group</p>
+                <h2 id="activeGroup">Line 2 Control</h2>
+              </div>
+              <button class="icon-button" type="button" id="a11yToggle" aria-pressed="false" title="접근성 보기 전환">
+                A11Y
+              </button>
+            </div>
+
+            <div class="emergency-banner" id="emergencyBanner" hidden>
+              <strong>EMERGENCY MODE</strong>
+              <span>Unit 204 has priority floor control</span>
+            </div>
+
+            <section class="tab-panel is-active" id="tab-home" aria-labelledby="nav-home">
+              <div class="status-grid">
+                <div class="status-cell">
+                  <span>Floor</span>
+                  <strong id="floorOwner">Idle</strong>
+                </div>
+                <div class="status-cell">
+                  <span>Members</span>
+                  <strong id="memberCount">18</strong>
+                </div>
+                <div class="status-cell">
+                  <span>Recording</span>
+                  <strong>On</strong>
+                </div>
+              </div>
+
+              <div class="ptt-zone">
+                <button class="ptt-button" type="button" id="pttButton" aria-label="Push to talk">
+                  <span id="pttLabel">PTT</span>
+                  <small id="pttHint">press and hold</small>
+                </button>
+                <button class="emergency-button" type="button" id="emergencyButton">
+                  Emergency
+                </button>
+              </div>
+
+              <div class="activity-feed" aria-label="최근 통신 기록">
+                <div class="feed-row is-speaking">
+                  <span class="unit-dot"></span>
+                  <div>
+                    <strong>Train 204</strong>
+                    <p>Departing Gangnam, passenger density high.</p>
+                  </div>
+                  <time>now</time>
+                </div>
+                <div class="feed-row">
+                  <span class="unit-dot idle"></span>
+                  <div>
+                    <strong>Control</strong>
+                    <p>Maintain reduced speed until Yeoksam.</p>
+                  </div>
+                  <time>1m</time>
+                </div>
+              </div>
+            </section>
+
+            <section class="tab-panel" id="tab-groups" aria-labelledby="nav-groups">
+              <div class="section-heading">
+                <h3>Talk Groups</h3>
+                <span>5 active</span>
+              </div>
+              <div class="group-list" id="groupList"></div>
+            </section>
+
+            <section class="tab-panel" id="tab-map" aria-labelledby="nav-map">
+              <div class="section-heading">
+                <h3>Location</h3>
+                <span>Live AVL</span>
+              </div>
+              <div class="map-visual" aria-label="현장 위치 지도">
+                <svg viewBox="0 0 320 250" role="img" aria-label="철도 노선과 현장 단말 위치">
+                  <rect x="0" y="0" width="320" height="250" rx="18"></rect>
+                  <path class="map-road" d="M20 62 C82 28 116 94 166 72 S244 26 302 58"></path>
+                  <path class="map-road secondary" d="M18 182 C78 136 128 164 178 132 S240 108 304 142"></path>
+                  <path class="map-line" d="M34 208 L88 160 L126 152 L168 114 L228 88 L294 42"></path>
+                  <circle class="map-node" cx="88" cy="160" r="6"></circle>
+                  <circle class="map-node" cx="168" cy="114" r="6"></circle>
+                  <circle class="map-node current" cx="228" cy="88" r="10"></circle>
+                  <circle class="map-node alert" cx="126" cy="152" r="8"></circle>
+                </svg>
+                <div class="map-overlay">
+                  <strong>Unit 204</strong>
+                  <span>37.5007, 127.0364</span>
+                </div>
+              </div>
+              <div class="location-actions">
+                <button type="button">Share location</button>
+                <button type="button">Route to incident</button>
+              </div>
+            </section>
+
+            <section class="tab-panel" id="tab-messages" aria-labelledby="nav-messages">
+              <div class="section-heading">
+                <h3>Messages</h3>
+                <span>Encrypted</span>
+              </div>
+              <div class="message-list" id="messageList">
+                <div class="message incoming">Platform 3 crowd control requested.</div>
+                <div class="message outgoing">Train 204 responding.</div>
+              </div>
+              <form class="message-form" id="messageForm">
+                <input id="messageInput" type="text" placeholder="상황 메시지 입력" aria-label="상황 메시지 입력" />
+                <button type="submit">Send</button>
+              </form>
+            </section>
+          </section>
+
+          <nav class="bottom-nav" aria-label="앱 탐색">
+            <button class="is-active" type="button" id="nav-home" data-tab="home">Home</button>
+            <button type="button" id="nav-groups" data-tab="groups">Groups</button>
+            <button type="button" id="nav-map" data-tab="map">Map</button>
+            <button type="button" id="nav-messages" data-tab="messages">Msg</button>
+          </nav>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
